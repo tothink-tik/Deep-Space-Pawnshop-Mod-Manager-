@@ -1,0 +1,9 @@
+bin/
+obj/
+out/
+dist/
+.vs/
+*.user
+*.suo
+*.log
+settings.json

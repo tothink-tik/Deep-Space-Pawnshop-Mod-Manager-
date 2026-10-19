@@ -1,0 +1,525 @@
+<UserControl x:Class="Dangpu.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <UserControl.Resources>
+        <Style x:Key="Swatch" TargetType="RadioButton">
+            <Setter Property="Width" Value="34" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid>
+                            <Ellipse x:Name="ring" Stroke="{DynamicResource BorderBrush}" StrokeThickness="1.5" />
+                            <Ellipse Margin="5" Fill="{TemplateBinding Background}" />
+                            <Path x:Name="check" Data="M2,6 L5,9 L10,2" Stroke="#1A1207" StrokeThickness="1.8"
+                                  Width="10" Height="9" Stretch="Uniform" Visibility="Collapsed"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ring" Property="Stroke" Value="{DynamicResource TextBrush}" />
+                                <Setter TargetName="ring" Property="StrokeThickness" Value="2" />
+                                <Setter TargetName="check" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
+        <StackPanel>
+            <StackPanel>
+                <TextBlock Text="设置" Style="{StaticResource H1}" />
+                <TextBlock Text="游戏在哪、怎么启动、用哪套界面。" Style="{StaticResource Caption}" Margin="0,5,0,0" />
+            </StackPanel>
+
+            <!-- 界面风格 -->
+            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="界面风格" Style="{StaticResource H2}" />
+                    <TextBlock Text="前几代的外观都保留了。背景和音乐不内置，全部用你自己的文件。"
+                               Style="{StaticResource Caption}" Margin="0,5,0,0" />
+                    <Grid Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <RadioButton x:Name="StyleTerminal" Grid.Column="0" Style="{StaticResource StyleChoice}"
+                                     GroupName="uiStyle" Tag="terminal" Click="UiStyle_Click" Margin="0,0,8,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle Width="18" Height="10" Fill="#0A1211" />
+                                    <Rectangle Width="18" Height="10" Fill="#162522" />
+                                    <Rectangle Width="18" Height="10" Fill="#E0A15A" />
+                                </StackPanel>
+                                <TextBlock Text="终端" FontSize="12.5" FontWeight="SemiBold" Margin="0,8,0,0" />
+                                <TextBlock Text="HUD / 网格" Style="{StaticResource Caption}" Margin="0,2,0,0" />
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="StyleNight" Grid.Column="1" Style="{StaticResource StyleChoice}"
+                                     GroupName="uiStyle" Tag="night" Click="UiStyle_Click" Margin="4,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle Width="18" Height="10" Fill="#10171A" />
+                                    <Rectangle Width="18" Height="10" Fill="#1B272A" />
+                                    <Rectangle Width="18" Height="10" Fill="#D9924E" />
+                                </StackPanel>
+                                <TextBlock Text="夜班" FontSize="12.5" FontWeight="SemiBold" Margin="0,8,0,0" />
+                                <TextBlock Text="暗青 + 琥珀" Style="{StaticResource Caption}" Margin="0,2,0,0" />
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="StyleGraphite" Grid.Column="2" Style="{StaticResource StyleChoice}"
+                                     GroupName="uiStyle" Tag="graphite" Click="UiStyle_Click" Margin="8,0,0,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle Width="18" Height="10" Fill="#15171B" />
+                                    <Rectangle Width="18" Height="10" Fill="#21252B" />
+                                    <Rectangle Width="18" Height="10" Fill="#5F86C0" />
+                                </StackPanel>
+                                <TextBlock Text="石墨" FontSize="12.5" FontWeight="SemiBold" Margin="0,8,0,0" />
+                                <TextBlock Text="中性深灰 + 冷蓝" Style="{StaticResource Caption}" Margin="0,2,0,0" />
+                            </StackPanel>
+                        </RadioButton>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 游戏目录 -->
+            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,16,0,0">
+                <StackPanel>
+                    <TextBlock Text="游戏目录" Style="{StaticResource H2}" />
+                    <TextBlock Text="指向 Probably Stolen.exe 所在的那一层。Steam 默认安装也能自动检测到。"
+                               Style="{StaticResource Caption}" Margin="0,5,0,0" />
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="PathBox" Style="{StaticResource FieldStyle}" />
+                        <Button Grid.Column="1" Style="{StaticResource BtnGhost}" Height="34" Margin="8,0,0,0"
+                                Click="Browse_Click">
+                            <TextBlock Text="浏览…" FontSize="12.5" />
+                        </Button>
+                        <Button Grid.Column="2" Style="{StaticResource BtnPrimary}" Height="34" Margin="8,0,0,0"
+                                Click="ApplyPath_Click">
+                            <TextBlock Text="应用" />
+                        </Button>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Style="{StaticResource BtnSubtle}" Height="26" Padding="8,0" Click="Detect_Click">
+                            <TextBlock Text="自动检测 Steam 库" FontSize="11.5" Foreground="{DynamicResource AccentBrush}" />
+                        </Button>
+                        <Button Style="{StaticResource BtnSubtle}" Height="26" Padding="8,0" Margin="6,0,0,0"
+                                Click="OpenGame_Click">
+                            <TextBlock Text="打开目录" FontSize="11.5" />
+                        </Button>
+                        <TextBlock Text="{Binding GamePathText}" Style="{StaticResource Caption}" Margin="10,0,0,0"
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="360" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 加载器 -->
+            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,12,0,0">
+                <StackPanel>
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="加载器（MelonLoader）" Style="{StaticResource H2}" />
+                            <TextBlock Text="模组得靠它才进得了游戏。这里能装、能修、能停用，也能把当前这套导出去带到别的机器。"
+                                       Style="{StaticResource Caption}" Margin="0,5,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <TextBlock Text="启用" Style="{StaticResource Caption}" VerticalAlignment="Center"
+                                       Margin="0,0,8,0" />
+                            <ToggleButton Style="{StaticResource Switch}"
+                                          IsChecked="{Binding LoaderEnabled, Mode=OneWay}"
+                                          IsEnabled="{Binding LoaderInstalled}"
+                                          Click="LoaderToggle_Click" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Border Background="{DynamicResource SurfaceAltBrush}" CornerRadius="8" Padding="12,10"
+                            Margin="0,12,0,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="7" Height="7" Fill="{Binding LoaderDotBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding LoaderSummary}" FontSize="12" Margin="8,0,0,0"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <ProgressBar Value="{Binding LoaderProgress, Mode=OneWay}" Maximum="100" Margin="0,10,0,0"
+                                         Visibility="{Binding LoaderBusy, Converter={StaticResource BoolToVis}}" />
+
+                            <Grid Margin="0,6,0,0"
+                                  Visibility="{Binding LoaderBusy, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="{Binding LoaderProgressText}" Style="{StaticResource Caption}"
+                                           VerticalAlignment="Center" />
+                                <Button HorizontalAlignment="Right" Style="{StaticResource BtnSubtle}" Height="22"
+                                        Padding="8,0" Click="CancelLoader_Click">
+                                    <TextBlock Text="取消" FontSize="11.5"
+                                               Foreground="{DynamicResource DangerBrush}" />
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button Style="{StaticResource BtnPrimary}" Height="34"
+                                Content="{Binding LoaderActionText}" Click="InstallLoader_Click" />
+                        <Button Style="{StaticResource BtnGhost}" Height="34" Margin="8,0,0,0"
+                                Click="InstallLoaderZip_Click">
+                            <TextBlock Text="从 zip 安装" FontSize="12.5" />
+                        </Button>
+                        <Button Style="{StaticResource BtnGhost}" Height="34" Margin="8,0,0,0"
+                                IsEnabled="{Binding LoaderInstalled}" Click="ExportLoader_Click">
+                            <TextBlock Text="导出当前加载器" FontSize="12.5" />
+                        </Button>
+                        <Button Style="{StaticResource BtnGhost}" Height="34" Margin="8,0,0,0"
+                                Click="OpenLoaderFolder_Click">
+                            <TextBlock Text="打开目录" FontSize="12.5" />
+                        </Button>
+                    </StackPanel>
+
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding LoaderCacheText}" Style="{StaticResource Caption}"
+                                   TextWrapping="Wrap" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Style="{StaticResource BtnSubtle}" Height="24" Padding="6,0"
+                                Margin="8,0,0,0" VerticalAlignment="Center" Click="OpenLoaderPage_Click">
+                            <TextBlock Text="手动下载页" FontSize="11.5"
+                                       Foreground="{DynamicResource AccentBrush}" />
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Nexus -->
+            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,12,0,0">
+                <StackPanel>
+                    <Grid>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="6" Height="6" Fill="{DynamicResource NeonBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Nexus Mods" Style="{StaticResource H2}" Margin="8,0,0,0" />
+                            </StackPanel>
+                            <TextBlock Text="填 API key 后，模组详情会自动读取 N 网主图、作者和完整简介。key 只存在本机的 settings.json 里。"
+                                       Style="{StaticResource Caption}" Margin="0,5,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Border Background="{DynamicResource InfoSoftBrush}" CornerRadius="4" Padding="7,2"
+                                HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <TextBlock Text="{Binding NexusKeyStateText}" FontSize="10.5"
+                                       Foreground="{DynamicResource TextSubBrush}" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <PasswordBox x:Name="NexusKeyBox" Style="{StaticResource SecretFieldStyle}"
+                                     FontFamily="{StaticResource MonoFont}" />
+                        <Button Grid.Column="1" Style="{StaticResource BtnPrimary}" Height="34" Margin="8,0,0,0"
+                                Click="SaveNexusKey_Click">
+                            <TextBlock Text="保存" />
+                        </Button>
+                        <Button Grid.Column="2" Style="{StaticResource BtnGhost}" Height="34" Margin="8,0,0,0"
+                                Click="TestNexusKey_Click">
+                            <TextBlock Text="测试" FontSize="12.5" />
+                        </Button>
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <Button Style="{StaticResource BtnSubtle}" Height="24" Padding="0" Click="OpenNexusKeyPage_Click">
+                            <TextBlock Text="获取 API key ↗" FontSize="11.5"
+                                       Foreground="{DynamicResource AccentBrush}" />
+                        </Button>
+                        <TextBlock Text="Nexus 设置 → API Keys，页面底部生成 Personal API Key。" Style="{StaticResource Caption}"
+                                   Margin="10,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 启动选项 -->
+            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="启动选项" Style="{StaticResource H2}" />
+                    <TextBlock Text="对应 MelonLoader 的命令行参数。默认隐藏控制台，出了问题可以打开调试模式看输出。"
+                               Style="{StaticResource Caption}" Margin="0,5,0,0" />
+
+                    <Grid Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <CheckBox Style="{StaticResource ModCheck}" IsChecked="{Binding Settings.HideConsole, Mode=TwoWay}"
+                                      Click="Option_Click" />
+                            <StackPanel Margin="10,0,0,0">
+                                <TextBlock Text="隐藏控制台" FontSize="12.5" />
+                                <TextBlock Text="--melonloader.hideconsole" Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,12">
+                            <CheckBox Style="{StaticResource ModCheck}" IsChecked="{Binding Settings.DebugMode, Mode=TwoWay}"
+                                      Click="Option_Click" />
+                            <StackPanel Margin="10,0,0,0">
+                                <TextBlock Text="调试模式" FontSize="12.5" />
+                                <TextBlock Text="--melonloader.debug" Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+                            <CheckBox Style="{StaticResource ModCheck}"
+                                      IsChecked="{Binding Settings.CapturePlayerLogs, Mode=TwoWay}" Click="Option_Click" />
+                            <StackPanel Margin="10,0,0,0">
+                                <TextBlock Text="捕获 Unity 日志" FontSize="12.5" />
+                                <TextBlock Text="--melonloader.captureplayerlogs" Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                            <CheckBox Style="{StaticResource ModCheck}" IsChecked="{Binding Settings.NoMods, Mode=TwoWay}"
+                                      Click="Option_Click" />
+                            <StackPanel Margin="10,0,0,0">
+                                <TextBlock Text="启动时不加载模组" FontSize="12.5" />
+                                <TextBlock Text="--no-mods" Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="附加参数" Style="{StaticResource H3}" Margin="0,16,0,0" />
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ArgsBox" Style="{StaticResource FieldStyle}"
+                                 FontFamily="{StaticResource MonoFont}" FontSize="11.5" />
+                        <Button Grid.Column="1" Style="{StaticResource BtnGhost}" Height="34" Margin="8,0,0,0"
+                                Click="SaveArgs_Click">
+                            <TextBlock Text="保存" FontSize="12.5" />
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 外观 -->
+            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="主题色" Style="{StaticResource H2}" />
+                    <TextBlock Text="每套风格有默认色，也可以单独改。" Style="{StaticResource Caption}" Margin="0,5,0,0" />
+                    <StackPanel x:Name="Swatches" Orientation="Horizontal" Margin="0,14,0,0">
+                        <RadioButton Style="{StaticResource Swatch}" Background="#E0A15A" Tag="#E0A15A"
+                                     GroupName="accent" Checked="Accent_Checked" Margin="0,0,10,0" />
+                        <RadioButton Style="{StaticResource Swatch}" Background="#4E9E94" Tag="#4E9E94"
+                                     GroupName="accent" Checked="Accent_Checked" Margin="0,0,10,0" />
+                        <RadioButton Style="{StaticResource Swatch}" Background="#C9635A" Tag="#C9635A"
+                                     GroupName="accent" Checked="Accent_Checked" Margin="0,0,10,0" />
+                        <RadioButton Style="{StaticResource Swatch}" Background="#5F86C0" Tag="#5F86C0"
+                                     GroupName="accent" Checked="Accent_Checked" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 界面 -->
+            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,12,0,0">
+                <StackPanel>
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="界面" Style="{StaticResource H2}" />
+                            <TextBlock Text="换一张背景图；不内置背景，选你自己的文件。压暗和虚化会自动保住文字可读性。"
+                                       Style="{StaticResource Caption}" Margin="0,5,0,0" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding BackgroundStateText}" Style="{StaticResource Caption}"
+                                   HorizontalAlignment="Right" VerticalAlignment="Top" />
+                    </Grid>
+
+                    <Grid Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Width="200" Height="112" CornerRadius="2" Background="{DynamicResource SurfaceAltBrush}">
+                            <Grid>
+                                <TextBlock Text="默认背景" Style="{StaticResource Caption}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <Image Source="{Binding BackgroundImage}" Stretch="UniformToFill" />
+                            </Grid>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" Margin="18,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Style="{StaticResource BtnPrimary}" Height="32" Content="选择图片"
+                                        Click="ChooseBackground_Click" />
+                                <Button Style="{StaticResource BtnGhost}" Height="32" Margin="8,0,0,0" Content="清除"
+                                        Click="ClearBackground_Click"
+                                        Visibility="{Binding HasBackground, Converter={StaticResource BoolToVis}}" />
+                            </StackPanel>
+
+                            <Grid Margin="0,14,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="48" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="44" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="压暗" Style="{StaticResource Caption}" VerticalAlignment="Center" />
+                                <Slider Grid.Column="1" Style="{StaticResource HudSlider}" Minimum="0" Maximum="0.9"
+                                        Value="{Binding BackgroundDim, Mode=TwoWay}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="{Binding BackgroundDim, StringFormat={}{0:P0}}"
+                                           Style="{StaticResource Caption}" HorizontalAlignment="Right"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="48" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="44" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="虚化" Style="{StaticResource Caption}" VerticalAlignment="Center" />
+                                <Slider Grid.Column="1" Style="{StaticResource HudSlider}" Minimum="0" Maximum="30"
+                                        Value="{Binding BackgroundBlur, Mode=TwoWay}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="{Binding BackgroundBlur, StringFormat={}{0:0}}"
+                                           Style="{StaticResource Caption}" HorizontalAlignment="Right"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 背景音乐 -->
+            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,12,0,0">
+                <StackPanel>
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="背景音乐" Style="{StaticResource H2}" />
+                            <TextBlock Text="不内置音乐，选本地文件；会复制到工具数据目录，可随时清空。"
+                                       Style="{StaticResource Caption}" Margin="0,5,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <TextBlock Text="启动时自动播放" Style="{StaticResource Caption}"
+                                       VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <ToggleButton Style="{StaticResource Switch}"
+                                          IsChecked="{Binding MusicAutoPlay, Mode=TwoWay}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="{DynamicResource SurfaceAltBrush}" CornerRadius="2" Padding="6" Height="118">
+                            <Grid>
+                                <ListBox x:Name="MusicList" Style="{StaticResource BareList}"
+                                         ItemsSource="{Binding MusicTracks}"
+                                         SelectedItem="{Binding SelectedMusicTrack, Mode=TwoWay}"
+                                         MouseDoubleClick="MusicList_MouseDoubleClick">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource PlainRow}">
+                                            <Setter Property="Height" Value="28" />
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Name}" FontSize="12" TextTrimming="CharacterEllipsis" />
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <TextBlock Text="还没有添加音乐" Style="{StaticResource Caption}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Visibility="{Binding HasMusic, Converter={StaticResource InverseBoolToVis}}" />
+                            </Grid>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" Width="272" Margin="16,0,0,0">
+                            <TextBlock Text="{Binding CurrentTrackName}" FontSize="12.5" FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis" />
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Button Style="{StaticResource BtnGhost}" Height="30" Content="上一首"
+                                        Click="PreviousMusic_Click" />
+                                <Button Style="{StaticResource BtnPrimary}" Height="30" Margin="6,0"
+                                        Content="{Binding MusicPlayPauseText}" Click="ToggleMusic_Click" />
+                                <Button Style="{StaticResource BtnGhost}" Height="30" Content="下一首"
+                                        Click="NextMusic_Click" />
+                            </StackPanel>
+
+                            <Grid Margin="0,10,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="44" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="40" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="音量" Style="{StaticResource Caption}" VerticalAlignment="Center" />
+                                <Slider Grid.Column="1" Style="{StaticResource HudSlider}" Minimum="0" Maximum="1"
+                                        Value="{Binding MusicVolume, Mode=TwoWay}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="{Binding MusicVolume, StringFormat={}{0:P0}}"
+                                           Style="{StaticResource Caption}" HorizontalAlignment="Right"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+
+                            <Grid Margin="0,8,0,0">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="循环" Style="{StaticResource Caption}" VerticalAlignment="Center"
+                                               Margin="0,0,8,0" />
+                                    <ToggleButton Style="{StaticResource Switch}"
+                                                  IsChecked="{Binding MusicLoop, Mode=TwoWay}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Style="{StaticResource BtnSubtle}" Height="26" Padding="6,0" Content="添加"
+                                            Click="AddMusic_Click" />
+                                    <Button Style="{StaticResource BtnSubtle}" Height="26" Padding="6,0" Margin="6,0,0,0"
+                                            Content="移除" Click="RemoveMusic_Click" />
+                                    <Button Style="{StaticResource BtnSubtle}" Height="26" Padding="6,0" Margin="6,0,0,0"
+                                            Content="清空" Click="ClearMusic_Click" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 关于 -->
+            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,12,0,0">
+                <Grid>
+                    <StackPanel>
+                        <TextBlock Text="关于" Style="{StaticResource H2}" />
+                        <TextBlock Text="深空当铺mod局外管理 1.0 测试版 · 作者 totrymod · Probably Stolen 的局外模组管理器" FontSize="12"
+                                   Foreground="{DynamicResource TextSubBrush}" Margin="0,6,0,0" />
+                        <TextBlock Text="只读写本机文件：Mods、UserData/MelonPreferences.cfg、MelonLoader/Latest.log。只有安装加载器和读取 N 网信息时联网，不上传日志或模组。"
+                                   Style="{StaticResource Caption}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                        <TextBlock Text="删除模组走回收站，备份存在工具自己的数据目录里。" Style="{StaticResource Caption}"
+                                   Margin="0,2,0,0" />
+                    </StackPanel>
+                    <Button HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource BtnGhost}"
+                            Height="30" Click="OpenData_Click">
+                        <TextBlock Text="打开工具数据目录" FontSize="12" />
+                    </Button>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

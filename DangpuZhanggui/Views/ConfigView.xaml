@@ -1,0 +1,191 @@
+<UserControl x:Class="Dangpu.Views.ConfigView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="模组配置" Style="{StaticResource H1}" />
+                    <Border Background="{DynamicResource WarnSoftBrush}" CornerRadius="4" Padding="7,2" Margin="10,2,0,0"
+                            VerticalAlignment="Center"
+                            Visibility="{Binding Config.IsDirty, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="有未保存的改动" FontSize="10.5" Foreground="{DynamicResource WarnBrush}" />
+                    </Border>
+                </StackPanel>
+                <TextBlock Text="UserData/MelonPreferences.cfg，各模组用 MelonPreferences 存下来的开关和数值。改完记得保存，最好在游戏关闭时改。"
+                           Style="{StaticResource Caption}" Margin="0,5,0,0" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Style="{StaticResource BtnGhost}" Height="34" Click="OpenFile_Click">
+                    <TextBlock Text="打开文件" FontSize="12.5" />
+                </Button>
+                <Button Style="{StaticResource BtnGhost}" Height="34" Margin="8,0,0,0" Click="Reload_Click">
+                    <TextBlock Text="还原" FontSize="12.5" />
+                </Button>
+                <Button Style="{StaticResource BtnPrimary}" Height="34" Margin="8,0,0,0" Click="Save_Click">
+                    <TextBlock Text="保存" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1" Style="{StaticResource Card}" Background="{DynamicResource SurfaceAltBrush}" Padding="14,10"
+                Margin="0,14,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="配置文件" Style="{StaticResource Caption}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Config.Path}" Style="{StaticResource Mono}" Margin="10,0,0,0"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="430" />
+                    <TextBlock Text="{Binding Config.LoadError}" FontSize="11.5"
+                               Foreground="{DynamicResource DangerBrush}" Margin="12,0,0,0"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBox x:Name="ConfigSearchBox" Grid.Column="1" Style="{StaticResource SearchStyle}"
+                         Width="200" Tag="搜索配置" VerticalAlignment="Center"
+                         TextChanged="ConfigSearch_TextChanged" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="216" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource Card}" Padding="8,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="分组" Style="{StaticResource H3}" Margin="10,2,0,8" />
+                    <ListBox x:Name="SectionList" Grid.Row="1" Style="{StaticResource BareList}"
+                             ItemsSource="{Binding Config.Sections}"
+                             SelectionChanged="SectionList_SelectionChanged">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource PlainRow}" />
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <TextBlock Text="{Binding DisplayName}" FontSize="12"
+                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding CountText}" FontSize="10.5" Opacity="0.55"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Style="{StaticResource Card}" Margin="12,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="16,13">
+                        <Grid>
+                            <TextBlock x:Name="SectionTitle" Text="选择一个分组" Style="{StaticResource H2}" />
+                            <TextBlock x:Name="SectionHint" Style="{StaticResource Caption}"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <ListBox x:Name="EntryList" Grid.Row="1" Style="{StaticResource BareList}" Padding="4,6">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Focusable" Value="False" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="bg" CornerRadius="7" Background="Transparent">
+                                                <ContentPresenter />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="bg" Property="Background"
+                                                            Value="{DynamicResource SurfaceAltBrush}" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="12,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Margin="0,0,16,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Key}" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextBrush}" />
+                                            <TextBlock Text="{Binding KindHint}" FontSize="10"
+                                                       Foreground="{DynamicResource TextFaintBrush}"
+                                                       Margin="8,1,0,0" VerticalAlignment="Center" />
+                                            <Ellipse Width="5" Height="5" Fill="{DynamicResource AccentBrush}"
+                                                     Margin="8,0,0,0" VerticalAlignment="Center"
+                                                     Visibility="{Binding IsDirty, Converter={StaticResource BoolToVis}}" />
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Comment}" Style="{StaticResource Caption}"
+                                                   TextWrapping="Wrap" Margin="0,3,0,0" LineHeight="16" />
+                                    </StackPanel>
+
+                                    <Grid Grid.Column="1" VerticalAlignment="Center" MinWidth="190">
+                                        <ToggleButton Style="{StaticResource Switch}" HorizontalAlignment="Right"
+                                                      IsChecked="{Binding BoolValue, Mode=TwoWay}"
+                                                      Visibility="{Binding IsBool, Converter={StaticResource BoolToVis}}" />
+                                        <TextBox Style="{StaticResource FieldStyle}" Height="30" Width="220"
+                                                 FontFamily="{StaticResource MonoFont}" FontSize="11.5"
+                                                 Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}" />
+                                        <TextBlock Text="{Binding RawValue}" FontFamily="{StaticResource MonoFont}"
+                                                   FontSize="11" Foreground="{DynamicResource TextFaintBrush}"
+                                                   HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"
+                                                   MaxWidth="220" ToolTip="{Binding RawValue}"
+                                                   Visibility="{Binding IsInline, Converter={StaticResource BoolToVis}}" />
+                                    </Grid>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Config.Exists}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock Text="没有可编辑的配置文件" FontSize="13.5" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="先启动一次游戏，模组会把默认配置写进 MelonPreferences.cfg。"
+                                   Style="{StaticResource Caption}" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

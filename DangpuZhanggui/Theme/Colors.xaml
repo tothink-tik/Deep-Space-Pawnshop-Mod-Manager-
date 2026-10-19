@@ -1,0 +1,67 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 「深空当铺 · 终端」：暗青金属 + 琥珀灯 + 铜绿 -->
+    <Color x:Key="AccentColor">#E0A15A</Color>
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#C9873F" />
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#2E2316" />
+    <SolidColorBrush x:Key="AccentBorderBrush" Color="#6B4E2A" />
+    <SolidColorBrush x:Key="AccentForegroundBrush" Color="#1A1207" />
+
+    <SolidColorBrush x:Key="BgBrush" Color="#0A1211" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#101B19" />
+    <SolidColorBrush x:Key="SurfaceAltBrush" Color="#162522" />
+    <SolidColorBrush x:Key="HoverBrush" Color="#1E2F2B" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#263732" />
+    <SolidColorBrush x:Key="BorderStrongBrush" Color="#3A4E48" />
+
+    <SolidColorBrush x:Key="TextBrush" Color="#EAE5D7" />
+    <SolidColorBrush x:Key="TextSubBrush" Color="#B9B4A7" />
+    <SolidColorBrush x:Key="TextMutedBrush" Color="#8A877C" />
+    <SolidColorBrush x:Key="TextFaintBrush" Color="#6B6960" />
+
+    <SolidColorBrush x:Key="SuccessBrush" Color="#64AE8E" />
+    <SolidColorBrush x:Key="SuccessSoftBrush" Color="#13251F" />
+    <SolidColorBrush x:Key="WarnBrush" Color="#D9A45C" />
+    <SolidColorBrush x:Key="WarnSoftBrush" Color="#2A2316" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#C9635A" />
+    <SolidColorBrush x:Key="DangerSoftBrush" Color="#2A1917" />
+    <SolidColorBrush x:Key="InfoSoftBrush" Color="#142A27" />
+    <SolidColorBrush x:Key="TealBrush" Color="#5FAFA4" />
+    <SolidColorBrush x:Key="NeonBrush" Color="#C25E8B" />
+
+    <SolidColorBrush x:Key="ScrollThumbBrush" Color="#3A4A45" />
+    <SolidColorBrush x:Key="ScrollThumbHoverBrush" Color="#4C5F58" />
+
+    <!-- 终端网格与扫描线：只用在主卡/空状态，透明度压到最低 -->
+    <DrawingBrush x:Key="TechGridBrush" TileMode="Tile" Viewport="0,0,48,48" ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing>
+                <GeometryDrawing.Pen>
+                    <Pen Brush="#0E5FAFA4" Thickness="0.7" />
+                </GeometryDrawing.Pen>
+                <GeometryDrawing.Geometry>
+                    <GeometryGroup>
+                        <LineGeometry StartPoint="0,0" EndPoint="48,0" />
+                        <LineGeometry StartPoint="0,0" EndPoint="0,48" />
+                    </GeometryGroup>
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <DrawingBrush x:Key="ScanlineBrush" TileMode="Tile" Viewport="0,0,8,4" ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="#05FFFFFF">
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry Rect="0,0,8,1" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <FontFamily x:Key="UiFont">Microsoft YaHei UI</FontFamily>
+    <FontFamily x:Key="MonoFont">Cascadia Mono, Consolas, Microsoft YaHei UI</FontFamily>
+
+</ResourceDictionary>

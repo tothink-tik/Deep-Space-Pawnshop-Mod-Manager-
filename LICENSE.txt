@@ -1,0 +1,18 @@
+深空当铺mod局外管理 / Deep Space Pawnshop Mod Manager
+Copyright (c) 2026 totrymod
+
+你可以：
+- 在 Nexus Mods 或作者指定的渠道下载、安装、个人使用。
+- 在注明作者和来源的前提下，截图、录制视频、写教程。
+
+未经作者书面许可，不可以：
+- 重新上传、镜像、打包分发本程序（包括修改版）。
+- 出售、放进付费墙或捆绑进收费产品。
+- 移除或替换作者标识。
+
+本程序按“现状”提供，不附带任何担保。使用模组管理、存档还原等功能造成的数据损失由使用者自行承担。
+
+第三方：
+- MelonLoader 归其作者所有，按 Apache License 2.0 授权。
+- Probably Stolen 及其素材归 Questing Goose Studio / tinyBuild 所有。
+- 本工具与上述公司没有隶属或背书关系。

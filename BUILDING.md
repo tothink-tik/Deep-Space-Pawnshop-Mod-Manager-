@@ -1,6 +1,6 @@
 # Building Deep Space Pawnshop Mod Manager
 
-Author: totrymod · Version: 1.0.0 Beta
+Author: totrymod · Version: 1.1.0 Beta
 
 This repository contains the full source of the Windows desktop app. It is published so users, Nexus staff, and antivirus vendors can audit the binary.
 
@@ -41,8 +41,8 @@ dotnet run --project DangpuZhanggui/DangpuZhanggui.csproj
 - `App.xaml`, `App.xaml.cs` — startup, theme, error logging.
 - `MainWindow.xaml` — shell, navigation, background layer, music button.
 - `Models/` — mod, save, search, and theme models.
-- `Services/` — MelonLoader, Nexus API, backups, saves, diagnostics, background/music, settings.
-- `Views/` — the ten pages (overview, mods, logs, config, profiles, backups, saves, diagnosis, discover, settings).
+- `Services/` — MelonLoader, Nexus API, backups, saves, diagnostics, background/music, modpacks, settings.
+- `Views/` — the eleven pages (overview, mods, logs, config, profiles, backups, saves, diagnosis, discover, modpacks, settings).
 - `Theme/` — color and control resources.
 - `Assets/` — app icon.
 - `Shooter.cs`, `*SelfTest.cs` — local screenshot/self-test harness; not required to run the app.

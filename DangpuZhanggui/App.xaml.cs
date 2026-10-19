@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using System.Windows;
 using Dangpu.Services;
 
@@ -71,9 +72,47 @@ public partial class App : Application
             case "--nexustest":
                 RunNexusTest(vm, args[1]);
                 return true;
+            case "--packtest":
+                RunPackTest(vm, args[1]);
+                Shutdown();
+                return true;
             default:
                 return false;
         }
+    }
+
+    private static void RunPackTest(MainViewModel vm, string outPath)
+    {
+        var report = new StringBuilder();
+        var enabled = vm.Mods.Where(m => m.Enabled).ToList();
+        report.AppendLine($"enabled mods: {enabled.Count}");
+
+        var info = ModpackService.Create(vm.Game, enabled, "示例整合包", "1.1", "totrymod", "1.1 功能演示", true, outPath);
+        report.AppendLine($"created: {info.Name} v{info.Version}, mods={info.ModCount}, size={info.FileSize}");
+
+        var read = ModpackService.Read(outPath);
+        report.AppendLine($"read: {read.Name}, mods={read.ModCount}, config={read.Manifest.IncludeConfig}");
+
+        var temp = Path.Combine(Path.GetTempPath(), "dangpu-packtest-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(temp);
+        File.WriteAllText(Path.Combine(temp, "Probably Stolen.exe"), "");
+        Directory.CreateDirectory(Path.Combine(temp, "Mods"));
+        Directory.CreateDirectory(Path.Combine(temp, "UserData"));
+
+        var fake = new GameInfo
+        {
+            GameDir = temp,
+            ExePath = Path.Combine(temp, "Probably Stolen.exe")
+        };
+        var result = ModpackService.Install(fake, outPath, checkRunning: false);
+        report.AppendLine($"install: mods={result.ModCount}, config={result.ConfigApplied}, backup={result.BackupPath}");
+        foreach (var file in Directory.GetFiles(Path.Combine(temp, "Mods"), "*", SearchOption.AllDirectories))
+            report.AppendLine("  " + Path.GetRelativePath(temp, file));
+
+        try { File.Delete(result.BackupPath); } catch { }
+        try { Directory.Delete(temp, true); } catch { }
+
+        File.WriteAllText(outPath + ".txt", report.ToString());
     }
 
     protected override void OnExit(ExitEventArgs e)

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.Win32;
 
 namespace Dangpu.Services;
@@ -16,6 +17,35 @@ public sealed class GameInfo : ObservableObject
     public string GameType { get; set; } = "";
     public string GameArch { get; set; } = "x64";
     public string GameDeveloper { get; set; } = "";
+    public string BuildId { get; set; } = "";
+    public DateTime? BuildUpdated { get; set; }
+
+    public string BuildText
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(BuildId))
+                return "Steam build " + BuildId + (BuildUpdated is { } d ? $" · 更新于 {d:yyyy-MM-dd HH:mm}" : "");
+            if (BuildUpdated is { } fileTime)
+                return $"游戏文件更新于 {fileTime:yyyy-MM-dd HH:mm}";
+            return "";
+        }
+    }
+
+    public void NotifyMetadataChanged()
+    {
+        OnPropertyChanged(nameof(Version));
+        OnPropertyChanged(nameof(Loader));
+        OnPropertyChanged(nameof(UnityVersion));
+        OnPropertyChanged(nameof(GameType));
+        OnPropertyChanged(nameof(GameArch));
+        OnPropertyChanged(nameof(GameDeveloper));
+        OnPropertyChanged(nameof(NameEn));
+        OnPropertyChanged(nameof(BuildId));
+        OnPropertyChanged(nameof(BuildUpdated));
+        OnPropertyChanged(nameof(BuildText));
+        OnPropertyChanged(nameof(VersionLine));
+    }
 
     public bool Found => !string.IsNullOrWhiteSpace(GameDir) && Directory.Exists(GameDir) && File.Exists(ExePath ?? "");
 
@@ -157,7 +187,102 @@ public static class GameLocator
             catch { }
         }
 
+        RefreshMetadata(info);
         return info;
+    }
+
+    /// <summary>重新读取日志头、Steam appmanifest 和 exe 时间；返回是否有变化。</summary>
+    public static bool RefreshMetadata(GameInfo info)
+    {
+        if (string.IsNullOrWhiteSpace(info.GameDir)) return false;
+
+        var oldVersion = info.Version;
+        var oldLoader = info.Loader;
+        var oldUnity = info.UnityVersion;
+        var oldType = info.GameType;
+        var oldArch = info.GameArch;
+        var oldDev = info.GameDeveloper;
+        var oldName = info.NameEn;
+        var oldBuild = info.BuildId;
+        var oldUpdated = info.BuildUpdated;
+
+        if (File.Exists(info.LatestLog))
+        {
+            var log = LogService.Read(info.LatestLog, 200);
+            info.Version = HeaderOr(log, "Game Version", info.Version);
+            info.Loader = HeaderOr(log, "MelonLoader", info.Loader);
+            info.UnityVersion = HeaderOr(log, "Unity Version", info.UnityVersion);
+            info.GameType = HeaderOr(log, "Game Type", info.GameType);
+            info.GameArch = HeaderOr(log, "Game Arch", info.GameArch);
+            info.GameDeveloper = HeaderOr(log, "Game Developer", info.GameDeveloper);
+            info.NameEn = HeaderOr(log, "Game Name", info.NameEn);
+        }
+
+        var steam = ReadSteamBuild(info.GameDir);
+        if (steam is { } build)
+        {
+            info.BuildId = build.Id;
+            info.BuildUpdated = build.Updated;
+        }
+        else
+        {
+            info.BuildId = "";
+            info.BuildUpdated = LatestGameFileTime(info.GameDir);
+        }
+
+        var changed = oldVersion != info.Version || oldLoader != info.Loader || oldUnity != info.UnityVersion ||
+                      oldType != info.GameType || oldArch != info.GameArch || oldDev != info.GameDeveloper ||
+                      oldName != info.NameEn || oldBuild != info.BuildId || oldUpdated != info.BuildUpdated;
+
+        if (changed) info.NotifyMetadataChanged();
+        return changed;
+    }
+
+    private static string HeaderOr(LogSnapshot log, string key, string fallback)
+        => log.Header.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value) ? value : fallback;
+
+    private static (string Id, DateTime? Updated)? ReadSteamBuild(string dir)
+    {
+        try
+        {
+            var common = Directory.GetParent(dir);
+            var steamapps = common?.Parent;
+            if (steamapps == null || !steamapps.Name.Equals("steamapps", StringComparison.OrdinalIgnoreCase))
+                return null;
+
+            foreach (var manifest in Directory.GetFiles(steamapps.FullName, "appmanifest_*.acf"))
+            {
+                var text = File.ReadAllText(manifest);
+                if (!text.Contains("Probably Stolen", StringComparison.OrdinalIgnoreCase)) continue;
+
+                var build = Regex.Match(text, "\"buildid\"\\s+\"(\\d+)\"");
+                if (!build.Success) continue;
+
+                DateTime? updated = null;
+                var stamp = Regex.Match(text, "\"LastUpdated\"\\s+\"(\\d+)\"");
+                if (stamp.Success && long.TryParse(stamp.Groups[1].Value, out var unix))
+                    updated = DateTimeOffset.FromUnixTimeSeconds(unix).ToLocalTime().DateTime;
+
+                return (build.Groups[1].Value, updated);
+            }
+        }
+        catch { }
+        return null;
+    }
+
+    private static DateTime? LatestGameFileTime(string dir)
+    {
+        try
+        {
+            var times = new List<DateTime>();
+            foreach (var name in new[] { "Probably Stolen.exe", "GameAssembly.dll" })
+            {
+                var path = Path.Combine(dir, name);
+                if (File.Exists(path)) times.Add(File.GetLastWriteTime(path));
+            }
+            return times.Count == 0 ? null : times.Max();
+        }
+        catch { return null; }
     }
 }
 

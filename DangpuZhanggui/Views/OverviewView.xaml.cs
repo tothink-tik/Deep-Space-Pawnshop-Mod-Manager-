@@ -29,6 +29,7 @@ public partial class OverviewView : UserControl, IPage
     private void Refresh_Click(object sender, RoutedEventArgs e)
     {
         _vm.Rescan(silent: true);
+        _vm.RefreshGameInfo();
         _vm.RefreshLog();
         _vm.RefreshBackups();
         _vm.SetStatus("已刷新", StatusKind.Info);

@@ -74,6 +74,8 @@
                             <TextBlock Text="{Binding GameTypeText}" FontSize="11.5"
                                        Foreground="{DynamicResource TextSubBrush}" />
                         </StackPanel>
+                        <TextBlock Text="{Binding GameBuildText}" Style="{StaticResource Caption}" Margin="0,6,0,0"
+                                   Visibility="{Binding HasGameBuild, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="28,0,0,0">

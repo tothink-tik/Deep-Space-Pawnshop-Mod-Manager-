@@ -17,7 +17,7 @@ public static class Shooter
             Directory.CreateDirectory(dir);
             await Task.Delay(1000);
 
-            for (int page = 0; page <= 9; page++)
+            for (int page = 0; page <= 10; page++)
             {
                 vm.PageIndex = page;
 
@@ -64,13 +64,13 @@ public static class Shooter
                     Capture(window, Path.Combine(dir, "page8-search.png"));
                 }
 
-                if (page == 9 && (window.Host.Content as System.Windows.Controls.UserControl)?.Content
+                if (page == 10 && (window.Host.Content as System.Windows.Controls.UserControl)?.Content
                         is System.Windows.Controls.ScrollViewer scroller)
                 {
                     scroller.ScrollToEnd();
                     window.UpdateLayout();
                     await Task.Delay(350);
-                    Capture(window, Path.Combine(dir, "page9-bottom.png"));
+                    Capture(window, Path.Combine(dir, "page10-bottom.png"));
                 }
             }
         }

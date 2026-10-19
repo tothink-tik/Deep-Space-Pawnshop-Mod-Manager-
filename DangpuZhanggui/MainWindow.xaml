@@ -55,7 +55,7 @@
                               Stretch="Uniform" />
                         <TextBlock Text="深空当铺mod局外管理" FontSize="15" FontWeight="SemiBold" Margin="10,0,0,0"
                                    VerticalAlignment="Center" />
-                        <TextBlock Text="1.0 测试版" FontSize="10" Foreground="{DynamicResource AccentBrush}"
+                        <TextBlock Text="1.1 测试版" FontSize="10" Foreground="{DynamicResource AccentBrush}"
                                    Margin="8,1,0,0" VerticalAlignment="Center" />
 
                         <TextBlock Text="Probably Stolen · 本地模组管理器" FontSize="12"

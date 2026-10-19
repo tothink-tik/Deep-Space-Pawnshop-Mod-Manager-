@@ -190,7 +190,7 @@ public static class NexusService
                 if (string.IsNullOrWhiteSpace(url)) return null;
 
                 using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("DangpuZhanggui/1.0.0");
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("DangpuZhanggui/1.1.0");
                 var bytes = await client.GetByteArrayAsync(url, ct);
                 if (bytes.Length < 512) return null;
                 await File.WriteAllBytesAsync(path, bytes, ct);
@@ -213,8 +213,8 @@ public static class NexusService
         var client = new HttpClient { Timeout = TimeSpan.FromSeconds(25) };
         client.DefaultRequestHeaders.Add("apikey", apiKey);
         client.DefaultRequestHeaders.Add("Application-Name", "DangpuZhanggui");
-        client.DefaultRequestHeaders.Add("Application-Version", "1.0.0");
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("DangpuZhanggui/1.0.0");
+        client.DefaultRequestHeaders.Add("Application-Version", "1.1.0");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("DangpuZhanggui/1.1.0");
         return client;
     }
 

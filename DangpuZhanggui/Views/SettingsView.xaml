@@ -507,7 +507,7 @@
                 <Grid>
                     <StackPanel>
                         <TextBlock Text="关于" Style="{StaticResource H2}" />
-                        <TextBlock Text="深空当铺mod局外管理 1.0 测试版 · 作者 totrymod · Probably Stolen 的局外模组管理器" FontSize="12"
+                        <TextBlock Text="深空当铺mod局外管理 1.1 测试版 · 作者 totrymod · Probably Stolen 的局外模组管理器" FontSize="12"
                                    Foreground="{DynamicResource TextSubBrush}" Margin="0,6,0,0" />
                         <TextBlock Text="只读写本机文件：Mods、UserData/MelonPreferences.cfg、MelonLoader/Latest.log。只有安装加载器和读取 N 网信息时联网，不上传日志或模组。"
                                    Style="{StaticResource Caption}" Margin="0,4,0,0" TextWrapping="Wrap" />

@@ -10,15 +10,15 @@
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <AssemblyName>深空当铺mod局外管理</AssemblyName>
     <RootNamespace>Dangpu</RootNamespace>
-    <Version>1.0.0</Version>
-    <FileVersion>1.0.0.0</FileVersion>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Version>1.1.0</Version>
+    <FileVersion>1.1.0.0</FileVersion>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <AssemblyTitle>深空当铺mod局外管理</AssemblyTitle>
     <Product>深空当铺mod局外管理 · Deep Space Pawnshop Mod Manager</Product>
     <Authors>totrymod</Authors>
     <Company>totrymod</Company>
     <Description>Probably Stolen 的局外模组管理器：装模组、管加载器、存档快照和崩溃诊断。</Description>
-    <InformationalVersion>1.0.0-beta</InformationalVersion>
+    <InformationalVersion>1.1.0-beta</InformationalVersion>
     <Copyright>© 2026 totrymod. 非官方工具，与 Questing Goose Studio / tinyBuild 无关。</Copyright>
     <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
     <InvariantGlobalization>false</InvariantGlobalization>

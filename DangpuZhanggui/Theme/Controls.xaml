@@ -548,7 +548,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Foreground" Value="{DynamicResource TextSubBrush}" />
-        <Setter Property="Height" Value="38" />
+        <Setter Property="Height" Value="36" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
 

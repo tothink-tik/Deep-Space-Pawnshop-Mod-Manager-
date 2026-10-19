@@ -29,7 +29,7 @@ git config --global user.email "你的邮箱"
 在 Git Bash 或系统终端里：
 
 ```bash
-cd "D:/WorkBuddy/2026-10-18-01-14-50/source-release"
+cd source-release
 
 git init
 git add .
@@ -47,7 +47,7 @@ git push -u origin main
 
 ```bash
 gh auth login
-cd "D:/WorkBuddy/2026-10-18-01-14-50/source-release"
+cd source-release
 gh repo create deep-space-pawnshop-mod-manager --public --source=. --remote=origin --push
 ```
 

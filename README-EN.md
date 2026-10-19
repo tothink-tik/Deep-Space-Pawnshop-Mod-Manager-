@@ -4,7 +4,7 @@ A local, out-of-game mod manager for **Probably Stolen**, by **totrymod**. Forme
 
 Unofficial tool. Not affiliated with Questing Goose Studio or tinyBuild.
 
-Version 1.0.0 Beta · Windows 10/11 x64
+Version 1.1.0 Beta · Windows 10/11 x64
 
 ## What it does
 
@@ -43,6 +43,18 @@ Version 1.0.0 Beta · Windows 10/11 x64
 - Cache lasts 7 days. Without a key, the local catalog summary is used.
 - Bind a Nexus page manually for mods that are not in the local catalog.
 - Batch version check: shows "Update available" when the Nexus version is newer.
+
+**Modpacks**
+- Create a `.dspmp` (a ZIP with `modpack.json` + `mods/`) from all enabled mods and an optional `MelonPreferences.cfg`.
+- The manifest stores name, version, author, description, game version/Steam build, per-mod SHA-256, and source links.
+- Import into the local library; install after an automatic backup of the current Mods and config.
+- Installing replaces the Mods folder (after backup) and optionally overwrites the config. The game must be closed. Version/build mismatch is reported.
+- Only enabled mods are packed; saves are not included.
+
+**Game version and Steam build**
+- Every 10 seconds the app re-reads the MelonLoader log header and the Steam `appmanifest`.
+- The overview shows `Steam build 26017150 · updated 2026-10-19 20:27`, so hotfixes are detected even when the game's own version string does not change.
+- The Refresh button re-reads immediately.
 
 **Profiles, backups, saves**
 - Save enabled/disabled combinations as profiles; apply normally or strictly (disable anything not listed).
@@ -100,6 +112,11 @@ The API key is stored locally in `settings.json` and masked in the UI. Do not sh
 - Probably Stolen and all game assets belong to Questing Goose Studio / tinyBuild.
 
 ## Changelog
+
+**1.1.0-beta**
+- Added modpack creation, import, and installation with automatic backup.
+- Added automatic Steam build detection and display.
+- Existing mod management, Nexus, profiles, backups, saves, diagnosis, UI styles, and custom media remain.
 
 **1.0.0-beta**
 - First public test build.

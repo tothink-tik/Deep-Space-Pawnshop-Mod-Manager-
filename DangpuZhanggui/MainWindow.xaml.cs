@@ -31,7 +31,7 @@ public partial class MainWindow : Window
         vm.PropertyChanged += OnViewModelChanged;
         StateChanged += (_, _) => UpdateChrome();
 
-        ShowPage(Math.Clamp(vm.PageIndex, 0, 9));
+        ShowPage(Math.Clamp(vm.PageIndex, 0, 10));
         ThemeMetrics.Current.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName == nameof(ThemeMetrics.CardRadius))
@@ -60,7 +60,7 @@ public partial class MainWindow : Window
     private void OnViewModelChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MainViewModel.PageIndex))
-            ShowPage(Math.Clamp(_vm.PageIndex, 0, 9));
+            ShowPage(Math.Clamp(_vm.PageIndex, 0, 10));
     }
 
     internal ContentControl Host => PageHost;
@@ -80,7 +80,8 @@ public partial class MainWindow : Window
                 6 => new SaveView(_vm),
                 7 => new DiagnosisView(_vm),
                 8 => new DiscoverView(_vm),
-                9 => new SettingsView(_vm),
+                9 => new ModpacksView(_vm),
+                10 => new SettingsView(_vm),
                 _ => new OverviewView(_vm)
             };
             _pages[index] = page;

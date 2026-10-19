@@ -1,6 +1,6 @@
 # 深空当铺mod局外管理
 
-《深空当铺：可能是偷的》（Probably Stolen）的局外模组管理器，**1.0 测试版**。作者 **totrymod**。以前叫「当铺掌柜」，3.1 起改名。布局照着 PCL2 的路子：左边导航、卡片列表、勾选启停。这一版保留科幻终端，同时提供三套界面风格（终端 / 夜班 / 石墨）；背景图和背景音乐都不内置，全部由玩家自己选。
+《深空当铺：可能是偷的》（Probably Stolen）的局外模组管理器，**1.1 测试版**。作者 **totrymod**。以前叫「当铺掌柜」，3.1 起改名。布局照着 PCL2 的路子：左边导航、卡片列表、勾选启停。这一版保留科幻终端，同时提供三套界面风格（终端 / 夜班 / 石墨）；新增整合包制作/导入/安装，管理器会自动读取 Steam build，热修也能发现。背景图和背景音乐都不内置，全部由玩家自己选。
 
 非官方工具，与 Questing Goose Studio / tinyBuild 无关。
 
@@ -31,6 +31,19 @@
 - 想要完全离线：把官方的 `MelonLoader.x64.zip` 放在 exe 旁边，工具会直接认它，不用联网也不用缓存。
 - 「启用」开关改的是 `UserData/Loader.cfg` 里的 `disable`，等价于 `--no-mods`，不用删文件。
 - 换版本时如果跨了小版本（比如 0.6 → 0.7），旧的 `MelonLoader` 目录会被改名留底；同版本修复是覆盖式，保留已经生成好的程序集。
+
+**整合包**
+- 左边「整合包」页可以把当前**已启用**的模组和可选的 `MelonPreferences.cfg` 打成一个 `.dspmp`（本质是 zip，里面有 `modpack.json` 和 `mods/`）。
+- 包里有名称、版本、作者、说明、游戏版本/build、每个模组的 SHA-256；文件夹模组会整个带进去。
+- 「导入整合包」会把包复制到 `%LOCALAPPDATA%\DangpuZhanggui\modpacks`；选中后能看模组清单，点「安装到游戏」。
+- 安装前会先自动备份当前 `Mods` 和配置，然后清空 `Mods`、解压整合包，可选覆盖配置；游戏运行时会拦下来。
+- 版本或 Steam build 不一致会提示；只安装你信任的整合包，里面的 DLL 会随游戏加载。
+- 目前只打包已启用模组，不包含存档。
+
+**游戏版本与 Steam build**
+- 管理器每 10 秒自动读一次 `MelonLoader/Latest.log` 头和 Steam `appmanifest`，变化就刷新界面。
+- 概览会显示 `Steam build 26017150 · 更新于 2026-10-19 20:27`。游戏自己没更新 `Application.version` 时，版本号可能还是旧字符串，但 build 变了就能发现。
+- 「刷新」按钮也会立即重读。
 
 **界面风格**
 - 终端：暗青金属 + HUD 网格 + 琥珀灯。
@@ -118,6 +131,7 @@ MelonPreferences 只是模组的配置存储，不是加载条件。没有配置
 - `cache\nexus\`：N 网模组信息与封面缓存
 - `backgrounds\`：玩家自选的背景图副本
 - `music\`：玩家自选的音乐副本
+- `modpacks\`：本地整合包库（导入/生成的 .dspmp）
 - `loader\`：缓存的 MelonLoader 安装包
 - `error.log`：崩了的话看这里
 
@@ -125,7 +139,7 @@ MelonPreferences 只是模组的配置存储，不是加载条件。没有配置
 
 ```
 深空当铺mod局外管理.exe --dump       out.json     把扫描结果吐成 JSON
-深空当铺mod局外管理.exe --shot       shots\       把十个页面各渲染一张 PNG
+深空当铺mod局外管理.exe --shot       shots\       把十一个页面各渲染一张 PNG
 深空当铺mod局外管理.exe --selftest   out.txt      启停/安装/备份/配置/诊断/存档（临时沙盒）
 深空当铺mod局外管理.exe --loadertest out.txt      导出加载器 → 装进临时目录 → 验证版本和启停
 深空当铺mod局外管理.exe --profiletest out.txt     方案保存/应用/严格应用 + 列表导出

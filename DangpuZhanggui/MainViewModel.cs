@@ -49,6 +49,7 @@ public sealed class MainViewModel : ObservableObject
     public ObservableCollection<DiagnosticFinding> Findings { get; } = new();
     public ObservableCollection<SaveSnapshot> SaveSnapshots { get; } = new();
     public ObservableCollection<NexusSearchResult> SearchResults { get; } = new();
+    public ObservableCollection<ModpackInfo> Modpacks { get; } = new();
     public ObservableCollection<NavItem> NavItems { get; } = new();
     public ConfigDocument Config { get; private set; }
 
@@ -70,6 +71,7 @@ public sealed class MainViewModel : ObservableObject
         NavItems.Add(new NavItem { Title = "存档", Icon = Geometry.Parse("M4 4 H17 L20 7 V20 H4 Z M8 4 V9 H16 V4 M8 14 H16 V20 H8 Z") });
         NavItems.Add(new NavItem { Title = "诊断", Icon = Geometry.Parse("M3 12 H7 L9 6 L13 18 L15 12 H21") });
         NavItems.Add(new NavItem { Title = "发现", Icon = Geometry.Parse("M10.5 4 A6.5 6.5 0 1 1 10.45 4 M15.2 15.2 L20.5 20.5") });
+        NavItems.Add(new NavItem { Title = "整合包", Icon = Geometry.Parse("M4 7 L12 3 L20 7 V17 L12 21 L4 17 Z M4 7 L12 11 L20 7 M12 11 V21") });
         NavItems.Add(new NavItem { Title = "设置", Icon = Geometry.Parse("M12 8.6 A3.4 3.4 0 1 1 11.95 8.6 M12 2.8 V5.2 M12 18.8 V21.2 M2.8 12 H5.2 M18.8 12 H21.2 M5.5 5.5 L7.2 7.2 M16.8 16.8 L18.5 18.5 M18.5 5.5 L16.8 7.2 M7.2 16.8 L5.5 18.5") });
 
         ModsView = CollectionViewSource.GetDefaultView(Mods);
@@ -91,6 +93,7 @@ public sealed class MainViewModel : ObservableObject
         RefreshLog();
         RefreshLoader();
         RefreshSaves();
+        RefreshModpacks();
         LoadBackground();
         LoadMusic();
     }
@@ -112,6 +115,7 @@ public sealed class MainViewModel : ObservableObject
             if (value == 5) RefreshBackups();
             if (value == 6) RefreshSaves();
             if (value == 7) RefreshDiagnostics();
+            if (value == 9) RefreshModpacks();
         }
     }
 
@@ -125,7 +129,8 @@ public sealed class MainViewModel : ObservableObject
         6 => "存档",
         7 => "诊断",
         8 => "发现",
-        9 => "设置",
+        9 => "整合包",
+        10 => "设置",
         _ => "概览"
     };
 
@@ -135,8 +140,28 @@ public sealed class MainViewModel : ObservableObject
     public bool GameMissing => !Game.Found;
     public string GamePathText => Game.GameDir ?? "未找到游戏目录";
     public string GameVersionText => string.IsNullOrWhiteSpace(Game.Version) ? "版本未知" : Game.Version;
+    public string GameBuildText => Game.BuildText;
+    public bool HasGameBuild => !string.IsNullOrWhiteSpace(GameBuildText);
     public string LoaderText => string.IsNullOrWhiteSpace(Game.Loader) ? "未检测到 MelonLoader" : Game.Loader;
     public string GameTypeText => Game.GameType.Equals("Il2cpp", StringComparison.OrdinalIgnoreCase) ? "IL2CPP" : Game.GameType;
+
+    private void NotifyGameInfo()
+    {
+        OnPropertyChanged(nameof(GameVersionText));
+        OnPropertyChanged(nameof(GameBuildText));
+        OnPropertyChanged(nameof(HasGameBuild));
+        OnPropertyChanged(nameof(LoaderText));
+        OnPropertyChanged(nameof(GameTypeText));
+    }
+
+    public void RefreshGameInfo()
+    {
+        var changed = GameLocator.RefreshMetadata(Game);
+        NotifyGameInfo();
+        if (!changed) return;
+        RefreshLog();
+        SetStatus("游戏信息已更新：" + Game.BuildText, StatusKind.Info);
+    }
 
     private bool _gameRunning;
     public bool GameRunning
@@ -166,9 +191,7 @@ public sealed class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(GameFound));
         OnPropertyChanged(nameof(GameMissing));
         OnPropertyChanged(nameof(GamePathText));
-        OnPropertyChanged(nameof(GameVersionText));
-        OnPropertyChanged(nameof(LoaderText));
-        OnPropertyChanged(nameof(GameTypeText));
+        NotifyGameInfo();
         OnPropertyChanged(nameof(Config));
         Rescan();
         RefreshLog();
@@ -338,6 +361,7 @@ public sealed class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(FilteredCount));
         OnPropertyChanged(nameof(ShowNoResults));
         OnPropertyChanged(nameof(ShowDropHint));
+        OnPropertyChanged(nameof(PackSourceText));
     }
 
     public int FilteredCount => ModsView.Cast<object>().Count();
@@ -980,7 +1004,7 @@ public sealed class MainViewModel : ObservableObject
         if (SelectedMod is { } mod) mod.DescriptionExpanded = !mod.DescriptionExpanded;
     }
 
-    public void GoToSettings() => PageIndex = 9;
+    public void GoToSettings() => PageIndex = 10;
 
     public string NexusKeyStateText => string.IsNullOrWhiteSpace(Settings.NexusApiKey) ? "未配置" : "已配置";
 
@@ -1521,7 +1545,7 @@ public sealed class MainViewModel : ObservableObject
         catch { }
     }
 
-    public void GoToNexusKeySettings() => PageIndex = 9;
+    public void GoToNexusKeySettings() => PageIndex = 10;
 
     public void CycleSearchSort()
     {
@@ -1885,6 +1909,149 @@ public sealed class MainViewModel : ObservableObject
         SetStatus("已清空背景音乐", StatusKind.Info);
     }
 
+    // ---------------- 整合包 ----------------
+
+    private ModpackInfo? _selectedModpack;
+    public ModpackInfo? SelectedModpack
+    {
+        get => _selectedModpack;
+        set
+        {
+            if (!Set(ref _selectedModpack, value)) return;
+            OnPropertyChanged(nameof(HasSelectedModpack));
+        }
+    }
+
+    public bool HasModpacks => Modpacks.Count > 0;
+    public bool HasSelectedModpack => SelectedModpack != null;
+    public string PackSourceText => $"将包含 {Mods.Count(m => m.Enabled)} 个已启用模组";
+
+    private string _packName = "Probably Stolen 整合包";
+    public string PackName { get => _packName; set => Set(ref _packName, value); }
+
+    private string _packVersion = "1.0";
+    public string PackVersion { get => _packVersion; set => Set(ref _packVersion, value); }
+
+    private string _packAuthor = "";
+    public string PackAuthor { get => _packAuthor; set => Set(ref _packAuthor, value); }
+
+    private string _packDescription = "";
+    public string PackDescription { get => _packDescription; set => Set(ref _packDescription, value); }
+
+    private bool _packIncludeConfig = true;
+    public bool PackIncludeConfig { get => _packIncludeConfig; set => Set(ref _packIncludeConfig, value); }
+
+    public void RefreshModpacks()
+    {
+        var selectedPath = SelectedModpack?.Path;
+        Modpacks.Clear();
+        foreach (var pack in ModpackService.ListLibrary()) Modpacks.Add(pack);
+        SelectedModpack = selectedPath == null
+            ? Modpacks.FirstOrDefault()
+            : Modpacks.FirstOrDefault(p => string.Equals(p.Path, selectedPath, StringComparison.OrdinalIgnoreCase))
+              ?? Modpacks.FirstOrDefault();
+        OnPropertyChanged(nameof(HasModpacks));
+    }
+
+    public async Task CreateModpackAsync(string outputPath)
+    {
+        if (GameMissing)
+        {
+            SetStatus("还没有找到游戏目录", StatusKind.Error);
+            return;
+        }
+
+        var selected = Mods.Where(m => m.Enabled).ToList();
+        if (selected.Count == 0)
+        {
+            SetStatus("没有已启用的模组，先启用再打包", StatusKind.Warn);
+            return;
+        }
+
+        try
+        {
+            var info = await Task.Run(() => ModpackService.Create(
+                Game, selected, PackName, PackVersion, PackAuthor, PackDescription, PackIncludeConfig, outputPath));
+            var library = ModpackService.AddToLibrary(info.Path);
+            RefreshModpacks();
+            SelectedModpack = Modpacks.FirstOrDefault(p =>
+                string.Equals(p.Path, library.Path, StringComparison.OrdinalIgnoreCase)) ?? library;
+            SetStatus($"整合包已生成：{library.Name}（{library.ModCount} 个模组）", StatusKind.Good);
+        }
+        catch (Exception ex)
+        {
+            SetStatus("生成整合包失败：" + ex.Message, StatusKind.Error);
+        }
+    }
+
+    public void ImportModpack(string path)
+    {
+        try
+        {
+            var info = ModpackService.Import(path);
+            RefreshModpacks();
+            SelectedModpack = Modpacks.FirstOrDefault(p =>
+                string.Equals(p.Path, info.Path, StringComparison.OrdinalIgnoreCase)) ?? info;
+            SetStatus($"已导入整合包：{info.Name}", StatusKind.Good);
+        }
+        catch (Exception ex)
+        {
+            SetStatus("导入整合包失败：" + ex.Message, StatusKind.Error);
+        }
+    }
+
+    public async Task InstallSelectedModpackAsync()
+    {
+        if (SelectedModpack is not { } pack) return;
+        if (GameMissing)
+        {
+            SetStatus("还没有找到游戏目录", StatusKind.Error);
+            return;
+        }
+
+        try
+        {
+            var result = await Task.Run(() => ModpackService.Install(Game, pack.Path));
+            Rescan(silent: true);
+            Config = ConfigDocument.Load(Game.ConfigPath);
+            OnPropertyChanged(nameof(Config));
+            RefreshLog();
+            RefreshLoader();
+            var warning = result.Warnings.Count > 0 ? "；" + string.Join("；", result.Warnings) : "";
+            SetStatus($"已安装 {result.ModCount} 个模组{(result.ConfigApplied ? "，配置已覆盖" : "")}；备份：{Path.GetFileName(result.BackupPath)}{warning}", StatusKind.Good);
+        }
+        catch (Exception ex)
+        {
+            SetStatus("安装整合包失败：" + ex.Message, StatusKind.Error);
+        }
+    }
+
+    public void DeleteSelectedModpack()
+    {
+        if (SelectedModpack is not { } pack) return;
+        try
+        {
+            File.Delete(pack.Path);
+            RefreshModpacks();
+            SetStatus("已删除整合包：" + pack.Name, StatusKind.Info);
+        }
+        catch (Exception ex)
+        {
+            SetStatus("删除失败：" + ex.Message, StatusKind.Error);
+        }
+    }
+
+    public void OpenModpackFolder()
+    {
+        try
+        {
+            Directory.CreateDirectory(ModpackService.LibraryDir);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(ModpackService.LibraryDir)
+                { UseShellExecute = true });
+        }
+        catch { }
+    }
+
     // ---------------- 设置 ----------------
 
     public void SaveSettings()
@@ -1957,10 +2124,22 @@ public sealed class MainViewModel : ObservableObject
         StatusTone = kind;
     }
 
+    private DateTime _lastGameMetadataCheck = DateTime.MinValue;
+
     public void Tick()
     {
         var running = GameRunner.IsRunning();
         if (running != GameRunning) GameRunning = running;
+
+        if (!Game.Found) return;
+        if ((DateTime.Now - _lastGameMetadataCheck).TotalSeconds < 10) return;
+
+        _lastGameMetadataCheck = DateTime.Now;
+        if (!GameLocator.RefreshMetadata(Game)) return;
+
+        NotifyGameInfo();
+        RefreshLog();
+        SetStatus("检测到游戏更新：" + Game.BuildText, StatusKind.Info);
     }
 
     /// <summary>--dump 调试用：把扫描结果整体吐成 JSON，方便核对元数据解析。</summary>
@@ -1973,6 +2152,9 @@ public sealed class MainViewModel : ObservableObject
                 dir = Game.GameDir,
                 found = Game.Found,
                 version = Game.Version,
+                buildId = Game.BuildId,
+                buildUpdated = Game.BuildUpdated?.ToString("yyyy-MM-dd HH:mm:ss"),
+                buildText = Game.BuildText,
                 loader = Game.Loader,
                 type = Game.GameType,
                 developer = Game.GameDeveloper
